@@ -13,8 +13,14 @@ const App = () => {
     const newPerson = {
       name: newName,
     };
-    setPersons([...persons, newPerson]);
-    setNewName("");
+    persons.map((person) => {
+      if (JSON.stringify(person) === JSON.stringify(newPerson)) {
+        alert(`${newName} is already added to phonebook.`);
+      } else {
+        setPersons([...persons, newPerson]);
+        setNewName("");
+      }
+    });
   };
 
   return (
