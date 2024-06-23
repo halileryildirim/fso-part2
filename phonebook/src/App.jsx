@@ -11,11 +11,6 @@ const App = () => {
   const [searchValue, setSearchValue] = useState("");
 
   const hook = () => {
-    // axios.get("http://localhost:3001/persons").then((response) => {
-    //   console.log("promise fulfilled");
-    //   setPersons([...response.data]);
-    // });
-
     personService.getAll().then((response) => {
       setPersons([...response.data]);
     });
@@ -35,6 +30,12 @@ const App = () => {
     setSearchValue(e.target.value);
   };
 
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}`)) {
+      personService.deletePerson(id);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const newPerson = { name: newName, number: newNumber };
@@ -46,7 +47,6 @@ const App = () => {
       alert(`${newName} is already added to phonebook.`);
     } else {
       personService.create(newPerson);
-      // axios.post("http://localhost:3001/persons", newPerson);
       setNewName("");
       setNewNumber("");
     }
@@ -73,7 +73,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
 
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
