@@ -39,12 +39,18 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newPerson = { name: newName, number: newNumber };
-    const personExists = persons.some(
+    const existingPerson = persons.find(
       (person) => person.name === newPerson.name
     );
 
-    if (personExists) {
-      alert(`${newName} is already added to phonebook.`);
+    if (existingPerson) {
+      if (
+        window.confirm(
+          `${existingPerson.name} is already added to phonebook, replace the old number with new one?`
+        )
+      ) {
+        personService.update(existingPerson.id, newPerson);
+      }
     } else {
       personService.create(newPerson);
       setNewName("");
