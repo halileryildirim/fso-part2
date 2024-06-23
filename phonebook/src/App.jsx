@@ -11,11 +11,20 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   const hook = () => {
-    personService.getAll().then((response) => {
-      setPersons([...response.data]);
-    });
+    personService
+      .getAll()
+      .then((response) => {
+        setPersons([...response.data]);
+      })
+      .catch((error) => {
+        setError("There was an error getting the members list.");
+        setTimeout(() => {
+          removeNotification();
+        }, 3000);
+      });
   };
 
   useEffect(hook, [persons]);
@@ -35,14 +44,17 @@ const App = () => {
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}`)) {
       setMessage(`Deleted ${name}`);
-      personService.deletePerson(id);
-      removeMessage();
+      personService.deletePerson(id).catch((error) => {
+        setError(`There was an error deleting the ${name}`);
+      });
+      removeNotification();
     }
   };
 
-  const removeMessage = () => {
+  const removeNotification = () => {
     setTimeout(() => {
       setMessage(null);
+      setError(null);
     }, 3000);
   };
 
@@ -59,16 +71,20 @@ const App = () => {
           `${existingPerson.name} is already added to phonebook, replace the old number with new one?`
         )
       ) {
-        personService.update(existingPerson.id, newPerson);
+        personService.update(existingPerson.id, newPerson).catch((error) => {
+          setError(`There was an error updating the ${existingPerson.name}`);
+        });
         setMessage(`Updated ${existingPerson.name}`);
-        removeMessage();
+        removeNotification();
       }
     } else {
-      personService.create(newPerson);
+      personService.create(newPerson).catch((error) => {
+        setError("There was an error adding the user to phonebook.");
+      });
       setMessage(`Added ${newPerson.name}`);
       setNewName("");
       setNewNumber("");
-      removeMessage();
+      removeNotification();
     }
   };
 
@@ -79,7 +95,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} error={error} />
 
       <Filter value={searchValue} onChange={handleSearch} />
 
