@@ -17,7 +17,7 @@ const App = () => {
     });
   };
 
-  useEffect(hook, []);
+  useEffect(hook, [persons]);
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -41,7 +41,7 @@ const App = () => {
     if (personExists) {
       alert(`${newName} is already added to phonebook.`);
     } else {
-      setPersons([...persons, newPerson]);
+      axios.post("http://localhost:3001/persons", newPerson);
       setNewName("");
       setNewNumber("");
     }
