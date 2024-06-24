@@ -1,37 +1,41 @@
+import { useState } from "react";
+import CountryDetails from "./CountryDetails";
+
 const Country = ({ countries }) => {
-  if (countries) {
-    if (countries.length > 10) {
-      return <p>Too many matches, specify another filter</p>;
-    }
-    if (countries.length < 10 && countries.length > 1) {
-      return countries.map((country) => (
-        <div key={country.cca3}>{country.name.common}</div>
-      ));
-    }
-    if (countries.length === 1) {
-      const country = countries[0];
-      const languages = Object.values(country.languages);
-      const flagURL = country.flags.png;
-      return (
-        <div>
-          <h1>{country.name.common}</h1>
-          <p>capital {country.capital}</p>Country
-          <p>area {country.area}</p>
-          <h2>languages: </h2>
-          <ul>
-            {languages.map((language, id) => (
-              <li key={id}>{language}</li>
-            ))}
-          </ul>
-          <div>
-            <img src={flagURL} />
-          </div>
-        </div>
-      );
-    }
-  } else {
-    return;
+  const [shownCountry, setShownCountry] = useState(null);
+
+  const handleShowClick = (country) => {
+    setShownCountry(country);
+  };
+
+  if (!countries) {
+    return null;
   }
+  if (countries.length > 10) {
+    return <p>Too many matches, specify another filter</p>;
+  }
+
+  if (countries.length > 1) {
+    return (
+      <div>
+        {countries.map((country) => (
+          <div key={country.cca3}>
+            {country.name.common}
+            <button onClick={() => handleShowClick(country)}>show</button>
+            {shownCountry && shownCountry.cca3 === country.cca3 && (
+              <CountryDetails country={shownCountry} />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (countries.length === 1) {
+    return <CountryDetails country={countries[0]} />;
+  }
+
+  return null;
 };
 
 export default Country;
