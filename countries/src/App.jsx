@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Country from "./components/Country";
 
 const App = () => {
   const [query, setQuery] = useState("");
@@ -9,11 +10,11 @@ const App = () => {
     axios
       .get("https://studies.cs.helsinki.fi/restcountries/api/all")
       .then((response) => {
-        console.log(response.data);
         setCountries([...response.data]);
+        console.log(response.data);
       })
       .catch((error) => {
-        console.log("error", error);
+        console.log("error:", error);
       });
   };
 
@@ -32,15 +33,7 @@ const App = () => {
       <div>
         find countries <input value={query} onChange={handleQuery} />
       </div>
-      <div>
-        {filteredCountries.length > 10 ? (
-          <p>Too many matches, specify another filter</p>
-        ) : (
-          filteredCountries.map((country) => (
-            <div key={country.cca3}>{country.name.common}</div>
-          ))
-        )}
-      </div>
+      <Country countries={filteredCountries} />
     </>
   );
 };
