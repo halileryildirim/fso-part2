@@ -11,7 +11,6 @@ const App = () => {
       .get("https://studies.cs.helsinki.fi/restcountries/api/all")
       .then((response) => {
         setCountries([...response.data]);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log("error:", error);
