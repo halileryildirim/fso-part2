@@ -27,7 +27,7 @@ const App = () => {
       });
   };
 
-  useEffect(hook, [persons]);
+  useEffect(hook, [message]);
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
