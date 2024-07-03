@@ -72,14 +72,14 @@ const App = () => {
         )
       ) {
         personService.update(existingPerson.id, newPerson).catch((error) => {
-          setError(`There was an error updating the ${existingPerson.name}`);
+          setError(error.response.data.error);
         });
         setMessage(`Updated ${existingPerson.name}`);
         removeNotification();
       }
     } else {
       personService.create(newPerson).catch((error) => {
-        setError("There was an error adding the user to phonebook.");
+        setError(error.response.data.error);
       });
       setMessage(`Added ${newPerson.name}`);
       setNewName("");
