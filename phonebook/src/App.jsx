@@ -73,28 +73,27 @@ const App = () => {
       ) {
         personService
           .update(existingPerson.id, newPerson)
-          .then((existingPerson) => {
-            setMessage(`Updated ${existingPerson.name}`);
-          })
+          .then(existingPerson)
           .catch((error) => {
             setError(error.response.data.error);
             console.log(error.response.data.error);
           });
-
+        setMessage(`Updated ${existingPerson.name}`);
         removeNotification();
       }
     } else {
       personService
         .create(newPerson)
-        .then((newPerson) => setMessage(`Added ${newPerson.name}`))
+        .then(newPerson)
         .catch((error) => {
           setError(error.response.data.error);
           console.log(error.response.data.error);
         });
 
+      setMessage(`Added ${newPerson.name}`);
+      removeNotification();
       setNewName("");
       setNewNumber("");
-      removeNotification();
     }
   };
 
