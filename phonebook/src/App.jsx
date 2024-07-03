@@ -71,17 +71,27 @@ const App = () => {
           `${existingPerson.name} is already added to phonebook, replace the old number with new one?`
         )
       ) {
-        personService.update(existingPerson.id, newPerson).catch((error) => {
-          setError(error.response.data.error);
-        });
-        setMessage(`Updated ${existingPerson.name}`);
+        personService
+          .update(existingPerson.id, newPerson)
+          .then((existingPerson) => {
+            setMessage(`Updated ${existingPerson.name}`);
+          })
+          .catch((error) => {
+            setError(error.response.data.error);
+            console.log(error.response.data.error);
+          });
+
         removeNotification();
       }
     } else {
-      personService.create(newPerson).catch((error) => {
-        setError(error.response.data.error);
-      });
-      setMessage(`Added ${newPerson.name}`);
+      personService
+        .create(newPerson)
+        .then((newPerson) => setMessage(`Added ${newPerson.name}`))
+        .catch((error) => {
+          setError(error.response.data.error);
+          console.log(error.response.data.error);
+        });
+
       setNewName("");
       setNewNumber("");
       removeNotification();
