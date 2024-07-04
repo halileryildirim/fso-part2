@@ -10,8 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState({ content: null });
 
   const hook = () => {
     personService
@@ -20,14 +19,25 @@ const App = () => {
         setPersons([...response.data]);
       })
       .catch((error) => {
-        setError("There was an error getting the members list.");
-        setTimeout(() => {
-          removeNotification();
-        }, 3000);
+        notificationUpdate(
+          "There was an error getting the members list.",
+          "error"
+        );
+        removeNotification();
       });
   };
 
   useEffect(hook, [message]);
+
+  const notificationUpdate = (content, type = "info") => {
+    setMessage({ content, type });
+  };
+
+  const removeNotification = () => {
+    setTimeout(() => {
+      setMessage({ content: null });
+    }, 3000);
+  };
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -43,19 +53,12 @@ const App = () => {
 
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}`)) {
-      setMessage(`Deleted ${name}`);
+      notificationUpdate(`Deleted ${name}`);
       personService.deletePerson(id).catch((error) => {
-        setError(`There was an error deleting the ${name}`);
+        notificationUpdate(`There was an error deleting the ${name}`, "error");
       });
       removeNotification();
     }
-  };
-
-  const removeNotification = () => {
-    setTimeout(() => {
-      setMessage(null);
-      setError(null);
-    }, 3000);
   };
 
   const handleSubmit = (e) => {
@@ -73,27 +76,27 @@ const App = () => {
       ) {
         personService
           .update(existingPerson.id, newPerson)
-          .then(existingPerson)
+          .then((existingPerson) => {
+            console.log(existingPerson);
+            notificationUpdate(`Updated ${existingPerson.data.name}`);
+          })
           .catch((error) => {
-            setError(error.response.data.error);
-            console.log(error.response.data.error);
+            notificationUpdate(error.response.data.error, "error");
           });
-        setMessage(`Updated ${existingPerson.name}`);
+        setNewName("");
+        setNewNumber("");
         removeNotification();
       }
     } else {
       personService
         .create(newPerson)
-        .then(newPerson)
+        .then((newPerson) => notificationUpdate(`Added ${newPerson.data.name}`))
         .catch((error) => {
-          setError(error.response.data.error);
-          console.log(error.response.data.error);
+          notificationUpdate(error.response.data.error, "error");
         });
-
-      setMessage(`Added ${newPerson.name}`);
-      removeNotification();
       setNewName("");
       setNewNumber("");
+      removeNotification();
     }
   };
 
@@ -104,7 +107,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} error={error} />
+      <Notification message={message} />
 
       <Filter value={searchValue} onChange={handleSearch} />
 
